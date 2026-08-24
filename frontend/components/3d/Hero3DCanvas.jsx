@@ -1,150 +1,165 @@
 'use client';
 
-import React, { useRef, useMemo } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Float, Sphere, MeshDistortMaterial } from '@react-three/drei';
-import * as THREE from 'three';
-
-// Rotating Agricultural Intelligence Digital Globe with glowing scan rings
-function DigitalAgriGlobe() {
-  const globeRef = useRef();
-  const ringRef1 = useRef();
-  const ringRef2 = useRef();
-  const particlesRef = useRef();
-
-  // Create point particles representing sensor / farm observation nodes
-  const { positions, colors } = useMemo(() => {
-    const count = 180;
-    const pos = new Float32Array(count * 3);
-    const cols = new Float32Array(count * 3);
-    const orangeColor = new THREE.Color('#FF6B00');
-    const greenColor = new THREE.Color('#10B981');
-    const amberColor = new THREE.Color('#F59E0B');
-
-    for (let i = 0; i < count; i++) {
-      // Golden spiral distribution on sphere surface
-      const phi = Math.acos(-1 + (2 * i) / count);
-      const theta = Math.sqrt(count * Math.PI) * phi;
-      const radius = 2.2 + Math.random() * 0.15;
-
-      pos[i * 3] = radius * Math.cos(theta) * Math.sin(phi);
-      pos[i * 3 + 1] = radius * Math.sin(theta) * Math.sin(phi);
-      pos[i * 3 + 2] = radius * Math.cos(phi);
-
-      const chosenColor = i % 5 === 0 ? greenColor : i % 3 === 0 ? amberColor : orangeColor;
-      cols[i * 3] = chosenColor.r;
-      cols[i * 3 + 1] = chosenColor.g;
-      cols[i * 3 + 2] = chosenColor.b;
-    }
-    return { positions: pos, colors: cols };
-  }, []);
-
-  useFrame((state, delta) => {
-    if (globeRef.current) {
-      globeRef.current.rotation.y += delta * 0.2;
-    }
-    if (ringRef1.current) {
-      ringRef1.current.rotation.x += delta * 0.3;
-      ringRef1.current.rotation.y += delta * 0.4;
-    }
-    if (ringRef2.current) {
-      ringRef2.current.rotation.y -= delta * 0.35;
-      ringRef2.current.rotation.z += delta * 0.25;
-    }
-    if (particlesRef.current) {
-      particlesRef.current.rotation.y += delta * 0.15;
-    }
-  });
-
-  return (
-    <group>
-      {/* Inner Distorted Crop Energy Sphere */}
-      <Sphere ref={globeRef} args={[1.7, 64, 64]}>
-        <MeshDistortMaterial
-          color="#0D0D0D"
-          emissive="#FF6B00"
-          emissiveIntensity={0.35}
-          roughness={0.2}
-          metalness={0.9}
-          distort={0.25}
-          speed={1.5}
-          wireframe={true}
-        />
-      </Sphere>
-
-      {/* Sensor Node Particle Cloud */}
-      <points ref={particlesRef}>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={positions.length / 3}
-            array={positions}
-            itemSize={3}
-          />
-          <bufferAttribute
-            attach="attributes-color"
-            count={colors.length / 3}
-            array={colors}
-            itemSize={3}
-          />
-        </bufferGeometry>
-        <pointsMaterial
-          size={0.06}
-          vertexColors
-          transparent
-          opacity={0.9}
-          blending={THREE.AdditiveBlending}
-        />
-      </points>
-
-      {/* Orbital Scanning Ring 1 (Orange Laser) */}
-      <mesh ref={ringRef1}>
-        <torusGeometry args={[2.5, 0.02, 16, 100]} />
-        <meshBasicMaterial color="#FF6B00" transparent opacity={0.6} />
-      </mesh>
-
-      {/* Orbital Scanning Ring 2 (Amber Laser) */}
-      <mesh ref={ringRef2}>
-        <torusGeometry args={[2.8, 0.015, 16, 100]} />
-        <meshBasicMaterial color="#F59E0B" transparent opacity={0.4} />
-      </mesh>
-    </group>
-  );
-}
+import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { Compass, Sparkles, Activity, ShieldCheck } from 'lucide-react';
 
 export default function Hero3DCanvas() {
-  return (
-    <div className="w-full h-[420px] sm:h-[520px] relative">
-      <Canvas
-        camera={{ position: [0, 0, 6], fov: 45 }}
-        gl={{ antialias: true, alpha: true }}
-        className="cursor-grab active:cursor-grabbing"
-      >
-        <ambientLight intensity={0.6} />
-        <pointLight position={[10, 10, 10]} intensity={1.5} color="#FF7A00" />
-        <pointLight position={[-10, -10, -10]} intensity={0.8} color="#10B981" />
-        
-        <Float speed={2} rotationIntensity={0.5} floatIntensity={0.8}>
-          <DigitalAgriGlobe />
-        </Float>
+  const [mounted, setMounted] = useState(false);
+  const canvasRef = useRef(null);
 
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          autoRotate={false}
-          maxPolarAngle={Math.PI / 1.5}
-          minPolarAngle={Math.PI / 3}
-        />
-      </Canvas>
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // 2D Cyber-Sphere & Particle Radar Animation (100% stable across all browsers & mobile devices)
+  useEffect(() => {
+    if (!mounted || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+    let angle = 0;
+
+    const particles = [];
+    const numParticles = 80;
+    const width = (canvas.width = 460);
+    const height = (canvas.height = 460);
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = 140;
+
+    // Generate 3D spherical point cloud
+    for (let i = 0; i < numParticles; i++) {
+      const phi = Math.acos(-1 + (2 * i) / numParticles);
+      const theta = Math.sqrt(numParticles * Math.PI) * phi;
+      particles.push({
+        x: radius * Math.cos(theta) * Math.sin(phi),
+        y: radius * Math.sin(theta) * Math.sin(phi),
+        z: radius * Math.cos(phi),
+        color: i % 4 === 0 ? '#10B981' : i % 3 === 0 ? '#F59E0B' : '#FF6B00',
+      });
+    }
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Rotate particles around Y-axis & X-axis
+      angle += 0.012;
+      const cosA = Math.cos(angle);
+      const sinA = Math.sin(angle);
+
+      // Draw outer glowing halo rings
+      ctx.strokeStyle = 'rgba(255, 107, 0, 0.2)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius + 25, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.15)';
+      ctx.setLineDash([8, 8]);
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius + 40, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw sweeping laser radar line
+      const laserX = centerX + Math.cos(angle * 1.5) * (radius + 25);
+      const laserY = centerY + Math.sin(angle * 1.5) * (radius + 25);
+      const grad = ctx.createLinearGradient(centerX, centerY, laserX, laserY);
+      grad.addColorStop(0, 'rgba(255, 107, 0, 0.0)');
+      grad.addColorStop(1, 'rgba(255, 107, 0, 0.5)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.lineTo(laserX, laserY);
+      ctx.stroke();
+
+      // Render 3D rotated nodes with depth sorting
+      const projected = particles.map((p) => {
+        // Rotate around Y
+        const rx = p.x * cosA - p.z * sinA;
+        const rz = p.x * sinA + p.z * cosA;
+        // Project to 2D
+        const scale = 250 / (250 + rz);
+        return {
+          x2d: centerX + rx * scale,
+          y2d: centerY + p.y * scale,
+          size: Math.max(1.8, 3.2 * scale),
+          alpha: Math.max(0.2, (rz + radius) / (radius * 2)),
+          color: p.color,
+          z: rz,
+        };
+      });
+
+      projected.sort((a, b) => a.z - b.z);
+
+      projected.forEach((p) => {
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.beginPath();
+        ctx.arc(p.x2d, p.y2d, p.size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Node glow
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 8;
+      });
+
+      ctx.globalAlpha = 1.0;
+      ctx.shadowBlur = 0;
+
+      // Draw Center Core Badge
+      ctx.fillStyle = '#0D0D0D';
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 35, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#FF6B00';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [mounted]);
+
+  if (!mounted) {
+    return (
+      <div className="w-full h-[420px] sm:h-[520px] flex flex-col items-center justify-center glass-panel rounded-3xl border border-white/5">
+        <div className="w-12 h-12 rounded-full border-2 border-agri-orange border-t-transparent animate-spin mb-4" />
+        <p className="text-xs font-mono text-agri-orange">LOADING SPATIAL RADAR...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full h-[420px] sm:h-[520px] relative flex items-center justify-center overflow-hidden">
+      <canvas
+        ref={canvasRef}
+        className="w-full max-w-[460px] h-[460px] object-contain select-none"
+      />
+
+      {/* Center Icon in Sphere */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="w-12 h-12 rounded-full bg-agri-orange/20 border border-agri-orange/50 flex items-center justify-center text-agri-orange shadow-[0_0_20px_rgba(255,107,0,0.6)]">
+          <ShieldCheck className="w-6 h-6 animate-pulse" />
+        </div>
+      </div>
 
       {/* Overlay HUD Telemetry */}
       <div className="absolute top-4 left-4 glass-panel px-3 py-1.5 rounded-xl border border-agri-orange/30 text-[10px] font-mono text-agri-orange flex items-center gap-2 pointer-events-none shadow-[0_0_15px_rgba(255,107,0,0.2)]">
         <span className="w-2 h-2 rounded-full bg-agri-orange animate-pulse"></span>
-        <span>C++ SPATIAL RADAR ACTIVE</span>
+        <span>C++ SPATIAL RADAR ONLINE</span>
       </div>
 
       <div className="absolute bottom-4 right-4 glass-panel px-3 py-1.5 rounded-xl border border-white/10 text-[10px] font-mono text-neutral-400 pointer-events-none">
-        DRAG TO ROTATE 3D SENSOR GLOBE
+        25 KM MULTI-RING SENSOR MESH
       </div>
     </div>
   );
