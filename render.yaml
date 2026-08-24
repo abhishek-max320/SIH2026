@@ -30,13 +30,14 @@ services:
     region: oregon
     rootDir: frontend
     buildCommand: npm install --legacy-peer-deps && npm run build
-    startCommand: npm start
+    startCommand: npm start -- -p $PORT
     envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
       - key: NODE_ENV
         value: production
       - key: NEXT_PUBLIC_API_BASE_URL
         fromService:
           type: web
           name: agrisentinel-backend
-          envVarKey: RENDER_EXTERNAL_URL
-          # Automatically attaches /api/v1 to the backend host
+          property: host
