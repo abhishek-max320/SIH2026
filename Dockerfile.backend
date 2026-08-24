@@ -1,0 +1,36 @@
+# ========================================================
+# AgriSentinel AI - Backend & C++ Engine Dockerfile
+# ========================================================
+FROM python:3.12-slim
+
+# Install C++ compiler & build tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    g++ \
+    make \
+    libgl1 \
+    libglib2.0-0 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Compile C++ Spatial & Risk Engine
+COPY cpp-engine/ /app/cpp-engine/
+RUN mkdir -p /app/cpp-engine/bin && \
+    g++ -std=c++17 -O3 -shared -fPIC -I /app/cpp-engine/include /app/cpp-engine/src/risk_engine.cpp -o /app/cpp-engine/bin/libcalc.so && \
+    g++ -std=c++17 -O3 -I /app/cpp-engine/include /app/cpp-engine/src/risk_engine.cpp /app/cpp-engine/src/cli_main.cpp -o /app/cpp-engine/bin/risk_engine_cli
+
+# Install Python requirements
+COPY backend/requirements.txt /app/backend/
+RUN pip install --no-cache-dir -r /app/backend/requirements.txt email-validator
+
+# Copy Backend Application
+COPY backend/ /app/backend/
+WORKDIR /app/backend
+
+# Initialize and seed database on container startup
+RUN python -c "from app.db.seed_data import seed_database; seed_database()"
+
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
