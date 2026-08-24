@@ -1,0 +1,42 @@
+# ========================================================
+# AgriSentinel AI - Render Unified Blueprint (1-Click Deploy)
+# ========================================================
+services:
+  # 1. FastAPI Backend & Native C++17 Risk Engine
+  - type: web
+    name: agrisentinel-backend
+    env: docker
+    dockerfilePath: ./Dockerfile.backend
+    dockerContext: .
+    plan: free
+    region: oregon
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: PORT
+        value: 8000
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: DATABASE_URL
+        value: sqlite:///./agrisentinel.db
+      - key: SECRET_KEY
+        generateValue: true
+
+  # 2. Next.js 15 Full-Stack Frontend
+  - type: web
+    name: agrisentinel-frontend
+    env: node
+    plan: free
+    region: oregon
+    rootDir: frontend
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_BASE_URL
+        fromService:
+          type: web
+          name: agrisentinel-backend
+          envVarKey: RENDER_EXTERNAL_URL
+          # Automatically attaches /api/v1 to the backend host
