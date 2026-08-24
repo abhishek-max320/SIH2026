@@ -42,8 +42,8 @@ export default function Sidebar({ isOpen, onClose }) {
       )}
 
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 glass-panel border-r border-white/10 p-4 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 glass-panel border-r border-white/10 p-4 flex flex-col justify-between transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         } lg:static lg:h-[calc(100vh-4rem)]`}
       >
         <div>

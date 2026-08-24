@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { ShieldCheck, Scan, ArrowRight, Zap, Play, CheckCircle2, Cpu, Activity, Globe, Compass, ExternalLink } from 'lucide-react';
+import { ShieldCheck, Scan, ArrowRight, Zap, CheckCircle2, Cpu, Activity, Globe, Compass, ExternalLink } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import Button from '../components/ui/Button';
@@ -11,17 +10,7 @@ import StatsCounter from '../components/landing/StatsCounter';
 import HowItWorks from '../components/landing/HowItWorks';
 import TechStackGrid from '../components/landing/TechStackGrid';
 import OutbreakRadarPreview from '../components/landing/OutbreakRadarPreview';
-
-// Dynamically import 3D Canvas with ssr: false to guarantee clean client-side WebGL loading
-const Hero3DCanvas = dynamic(() => import('../components/3d/Hero3DCanvas'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-[420px] sm:h-[520px] flex flex-col items-center justify-center glass-panel rounded-3xl border border-white/5">
-      <div className="w-12 h-12 rounded-full border-2 border-agri-orange border-t-transparent animate-spin mb-4" />
-      <p className="text-xs font-mono text-agri-orange">INITIALIZING 3D SPATIAL SENSOR GLOBE...</p>
-    </div>
-  ),
-});
+import Hero3DCanvas from '../components/3d/Hero3DCanvas';
 
 export default function LandingPage() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -31,12 +20,12 @@ export default function LandingPage() {
       {/* Top Navbar */}
       <Navbar onOpenMobileNav={() => setMobileNavOpen(true)} />
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer Only */}
       <Sidebar isOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
 
-      <main className="flex-1">
+      <main className="flex-1 w-full overflow-x-hidden">
         {/* ===================== HERO SECTION ===================== */}
-        <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 lg:pt-20 lg:pb-24">
+        <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 lg:pt-16 lg:pb-24">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Left Column: Heading & CTAs */}
             <div className="lg:col-span-7 space-y-6 text-left">
@@ -89,7 +78,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right Column: 3D Interactive Crop Scene */}
+            {/* Right Column: 3D Holographic Crop Scene */}
             <div className="lg:col-span-5">
               <div className="glass-panel-glow rounded-3xl p-4 border border-agri-orange/30 relative">
                 <Hero3DCanvas />
