@@ -136,10 +136,10 @@ export default function DiagnosticResultPage() {
     <div className="min-h-screen bg-background text-neutral-100 flex flex-col justify-between selection:bg-agri-orange selection:text-black">
       <Navbar onOpenMobileNav={() => setMobileNavOpen(true)} />
 
-      <div className="flex-1 flex max-w-7xl w-full mx-auto">
+      <div className="flex-1 flex w-full max-w-7xl mx-auto">
         <Sidebar isOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
 
-        <main className="flex-1 p-4 sm:p-8 lg:p-10 space-y-8 overflow-y-auto">
+        <main className="flex-1 min-w-0 p-4 sm:p-8 lg:p-10 space-y-8 overflow-y-auto">
           {/* Top Bar Navigation */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
             <Link
